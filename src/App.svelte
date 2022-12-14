@@ -6,6 +6,13 @@ let copy
 function svgToPoints(svg) {
   let points = [];
   let paths = svg.querySelectorAll("path");
+  paths = [...paths,...svg.querySelectorAll("circle")];
+  paths = [...paths,...svg.querySelectorAll("ellipse")];
+  paths = [...paths,...svg.querySelectorAll("rect")];
+  paths = [...paths,...svg.querySelectorAll("line")];
+  paths = [...paths,...svg.querySelectorAll("polyline")];
+  paths = [...paths,...svg.querySelectorAll("polygon")];
+  console.log(paths);
   paths.forEach((path) => {
     let pathLength = path.getTotalLength();
     let pathPoints = [];
