@@ -60,6 +60,9 @@ function svgToPoints(svg) {
         navigator.clipboard.writeText(copy.value);
       }
     }>Copy</button>
+    <footer>
+      <p>Sorry about this, but the output is actually upside down. So make sure to either add <code>pewpew.customizable_entity_add_rotation_to_mesh(background, fmath.tau() / 2fx, 0fx, 0fx, 0fx)</code> or whatever rotation value you want on the mesh.</p>
+    </footer>
 </main>
 
 <style>
@@ -84,6 +87,12 @@ input{
   align-items: center;
   justify-content: center;
 
+}
+p{
+  width:80vw;
+  max-width: 700px;
+  padding: 20px 0;
+  background-color: white;
 }
 
 </style>
