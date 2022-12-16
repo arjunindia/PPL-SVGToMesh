@@ -1,5 +1,7 @@
 <script>
 // @ts-nocheck
+import {debounce} from 'lodash.debounce';
+
 let container;
 let copy
 // converts any svg component (paths,ellipses,etc) to an array of points
@@ -24,16 +26,34 @@ function svgToPoints(svg) {
   });
   return points;
 }
-  
-</script>
+ 
+//function that takes an svgToPoints array and returns an svg element
+function pointsToSvg(points,prevSVG) {
+  let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", prevSVG.getAttribute("viewBox"));
+  svg.setAttribute("fill", "none");
+  svg.setAttribute("stroke", "black");
+  svg.setAttribute("stroke-width", "0.5");
+  svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
 
-<main>
-  <input type="file" name="svg" id="svgfile" accept=".svg" on:change={(file)=>{
-    // console.log(file.target.files[0]);
+  points.forEach((point) => {
+    let path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", `M${point[0][0]} ${point[0][1]} L${point
+      .slice(1)
+      .map((point) => `${point[0]} ${point[1]}`)
+      .join(" ")}`);
+    svg.appendChild(path);
+  });
+  return svg;
+}
+
+function handleFile(file){
+  container.innerHTML = "Loading...";
     file.target.files[0].text().then((text)=>{
       // console.log(text);
       container.innerHTML = text;
       let points = (svgToPoints(container.querySelector("svg")));
+      container.innerHTML = pointsToSvg(points,container.querySelector("svg")).outerHTML;
       let count = 0;
       let segments = points.map((point)=>{
           return new Array(point.length).fill(0).map(()=>{
@@ -47,6 +67,14 @@ function svgToPoints(svg) {
       },[])).replaceAll('[','{').replaceAll(']','}')},segments=${JSON.stringify(segments).replaceAll('[','{').replaceAll(']','}')}}}`
 
     })
+}
+
+</script>
+
+<main>
+  <input type="file" name="svg" id="svgfile" accept=".svg" on:change={(file)=>{
+    // console.log(file.target.files[0]);
+    handleFile(file);
 }} />
     <div bind:this={container} id="svgcontainer" >
       
@@ -93,6 +121,18 @@ p{
   max-width: 700px;
   padding: 20px 0;
   background-color: white;
+  line-break: loose;
+  word-wrap: break-word;
+}
+@media (max-width: 1000px){
+  #svgcontainer{
+    width: 70vw;
+  }
+}
+@media (max-width: 800px){
+  #svgcontainer{
+    width: 90vw;
+  }
 }
 
 </style>
