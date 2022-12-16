@@ -83,7 +83,7 @@ function handleFile(file = filec){
 }} />
     <label for="quality" style="background:white;">Sharpness (lesser is better quality but larger)</label>
 
- <input type="number" name="quality" min="1" max="200" bind:value={quality} on:change={
+ <input type="number" name="quality" min="1" max="200" bind:value={quality} on:input={
   debounce(()=>{
     handleFile()
   },400)
