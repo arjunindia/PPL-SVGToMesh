@@ -1,9 +1,12 @@
 <script>
 // @ts-nocheck
-import {debounce} from 'lodash.debounce';
+import debounce from 'lodash.debounce';
 
 let container;
 let copy
+let quality = 1;
+let fileinp;
+let filec = null;
 // converts any svg component (paths,ellipses,etc) to an array of points
 function svgToPoints(svg) {
   let points = [];
@@ -18,7 +21,7 @@ function svgToPoints(svg) {
   paths.forEach((path) => {
     let pathLength = path.getTotalLength();
     let pathPoints = [];
-    for (let i = 0; i < pathLength; i += 1) {
+    for (let i = 0; i < pathLength; i += quality) {
       let point = path.getPointAtLength(i);
       pathPoints.push([point.x, point.y]);
     }
@@ -47,8 +50,10 @@ function pointsToSvg(points,prevSVG) {
   return svg;
 }
 
-function handleFile(file){
-  container.innerHTML = "Loading...";
+function handleFile(file = filec){
+  copy.value = "Loading...";
+  filec = file;
+  console.log(filec)
     file.target.files[0].text().then((text)=>{
       // console.log(text);
       container.innerHTML = text;
@@ -72,14 +77,20 @@ function handleFile(file){
 </script>
 
 <main>
-  <input type="file" name="svg" id="svgfile" accept=".svg" on:change={(file)=>{
+  <input bind:this={fileinp} type="file" name="svg" id="svgfile" accept=".svg" on:change={(file)=>{
     // console.log(file.target.files[0]);
     handleFile(file);
 }} />
-    <div bind:this={container} id="svgcontainer" >
-      
-    </div>
+    <label for="quality" style="background:white;">Sharpness (lesser is better quality but larger)</label>
+
+ <input type="number" name="quality" min="1" max="200" bind:value={quality} on:change={
+  debounce(()=>{
+    handleFile()
+  },400)
+}>
+    <div bind:this={container} id="svgcontainer"/>
     <textarea name="something" id="copy" cols="30" rows="10" bind:this={copy}></textarea>
+   
     <button on:click={
       ()=>{
         copy.select();
